@@ -6,11 +6,10 @@
 #include <fstream>
 #include <cstring>
 #include "jute.h"
-using namespace std;
 using namespace jute;
 
-string deserialize(const string& ref) {
-  string out = "";
+std::string deserialize(const std::string& ref) {
+  std::string out = "";
   for (size_t i=0;i<ref.length();i++) {
     if (ref[i] == '\\' && i+1 < ref.length()) {
       int plus = 2;
@@ -48,26 +47,26 @@ string deserialize(const string& ref) {
   return out;
 }
 
-string jValue::makesp(int d) {
-  string s = "";
+std::string jValue::makesp(int d) {
+  std::string s = "";
   while (d--) s += "  ";
   return s;
 }
-string jValue::to_string_d(int d) {
-  if (type == JSTRING)   return string("\"") + svalue + string("\"");
+std::string jValue::to_string_d(int d) {
+  if (type == JSTRING)   return std::string("\"") + svalue + std::string("\"");
   if (type == JNUMBER)   return svalue;
   if (type == JBOOLEAN)  return svalue;
   if (type == JNULL)     return "null";
   if (type == JOBJECT) {
-    string s = string("{\n");
+    std::string s = std::string("{\n");
     for (size_t i=0;i<properties.size();i++) {
-      s += makesp(d) + string("\"") + properties[i].first + string("\": ") + properties[i].second.to_string_d(d+1) + string(i==properties.size()-1?"":",") + string("\n");
+      s += makesp(d) + std::string("\"") + properties[i].first + std::string("\": ") + properties[i].second.to_string_d(d+1) + std::string(i==properties.size()-1?"":",") + std::string("\n");
     }
-    s += makesp(d-1) + string("}");
+    s += makesp(d-1) + std::string("}");
     return s;
   }
   if (type == JARRAY) {
-    string s = "[";
+    std::string s = "[";
     for (size_t i=0;i<arr.size();i++) {
       if (i) s += ", ";
       s += arr[i].to_string_d(d+1);
@@ -84,7 +83,7 @@ jValue::jValue(jType tp) {
   this->type = tp;
 }
 
-string jValue::to_string() {
+std::string jValue::to_string() {
   return to_string_d(1);
 }
 jType jValue::get_type() {
@@ -93,25 +92,25 @@ jType jValue::get_type() {
 void jValue::set_type(jType tp) {
   type = tp;
 }
-void jValue::add_property(string key, jValue v) {
+void jValue::add_property(std::string key, jValue v) {
   mpindex[key] = properties.size();
   properties.push_back(make_pair(key, v));
 }
 void jValue::add_element(jValue v) {
   arr.push_back(v);
 }
-void jValue::set_string(string s) {
+void jValue::set_string(std::string s) {
   svalue = s;
 }
 int jValue::as_int() {
-  stringstream ss;
+  std::stringstream ss;
   ss << svalue;
   int k;
   ss >> k;
   return k;
 }
 double jValue::as_double() {
-  stringstream ss;
+  std::stringstream ss;
   ss << svalue;
   double k;
   ss >> k;
@@ -124,7 +123,7 @@ bool jValue::as_bool() {
 void* jValue::as_null() {
   return NULL;
 }
-string jValue::as_string() {
+std::string jValue::as_string() {
   return deserialize(svalue);
 }
 int jValue::size() {
@@ -145,20 +144,20 @@ jValue jValue::operator[](int i) {
   }
   return jValue();
 }
-jValue jValue::operator[](string s) {
+jValue jValue::operator[](std::string s) {
   if (mpindex.find(s) == mpindex.end()) return jValue();
   return properties[mpindex[s]].second;
 }
 
 struct parser::token {
-  string value;
+  std::string value;
   token_type type;
-  token(string value="",token_type type=UNKNOWN): value(value), type(type) {}
+  token(std::string value="",token_type type=UNKNOWN): value(value), type(type) {}
 };
 bool parser::is_whitespace(const char c) {
   return isspace(c);
 }
-int parser::next_whitespace(const string& source, int i) {
+int parser::next_whitespace(const std::string& source, int i) {
   while (i < (int)source.length()) {
     if (source[i] == '"') {
       i++;
@@ -173,7 +172,7 @@ int parser::next_whitespace(const string& source, int i) {
   }
   return (int)source.length();
 }
-int parser::skip_whitespaces(const string& source, int i) {
+int parser::skip_whitespaces(const std::string& source, int i) {
   while (i < (int)source.length()) {
     if (!is_whitespace(source[i])) return i;
     i++;
@@ -181,13 +180,13 @@ int parser::skip_whitespaces(const string& source, int i) {
   return -1;
 }
 
-vector<parser::token> parser::tokenize(string source) {
+std::vector<parser::token> parser::tokenize(std::string source) {
   source += " ";
-  vector<token> tokens;
+  std::vector<token> tokens;
   int index = skip_whitespaces(source, 0);
   while (index >= 0) {
     int next = next_whitespace(source, index);
-    string str = source.substr(index, next-index);
+    std::string str = source.substr(index, next-index);
     
     size_t k = 0;
     while (k < str.length()) {
@@ -271,13 +270,13 @@ vector<parser::token> parser::tokenize(string source) {
 }
   
 
-jValue parser::json_parse(vector<token> v, int i, int& r) {
+jValue parser::json_parse(std::vector<token> v, int i, int& r) {
   jValue current;
   if (v[i].type == CROUSH_OPEN) {
     current.set_type(JOBJECT);
     int k = i+1;
     while (v[k].type != CROUSH_CLOSE) {
-      string key = v[k].value;
+      std::string key = v[k].value;
       k+=2; // k+1 should be ':'
       int j = k;
       jValue vv = json_parse(v, k, j);
@@ -328,16 +327,15 @@ jValue parser::json_parse(vector<token> v, int i, int& r) {
   return current;
 }
 
-jValue parser::parse(const string& str) {
+jValue parser::parse(const std::string& str) {
   int k;
   return json_parse(tokenize(str), 0, k);
 }
-jValue parser::parse_file(const string& filename) {
-  ifstream in(filename.c_str());
-  string str = "";
-  string tmp;
+jValue parser::parse_file(const std::string& filename) {
+  std::ifstream in(filename.c_str());
+  std::string str = "";
+  std::string tmp;
   while (getline(in, tmp)) str += tmp;
   in.close();
   return parser::parse(str);
 }
-
