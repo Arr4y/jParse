@@ -1,10 +1,6 @@
-<p align="center">
-  <a href="https://github.com/amir-s/jute">
-    <img src="jute.svg" alt="jute.svg">
-  </a>
-</p>
 <br>
 <h3 align="center">Very simple JSON parser for c++</h3>
+<h2 align="center">Currently in the works. This is based off of the jute code. This project is looking to add new features, increase performance, and reduce overhead and resource usage.<h2>
 <br>
 <br>
 
@@ -111,8 +107,8 @@ int main () {
 <h1>Note:</h1>
 <br>
 
-This version is not providing error checking. All functions assume the input string is in valid format of JSON. Also number format checking is poor.
-Improvements are welcome. Read the source code; it is just about 300 LOC  :smile:
+This version is not providing error checking (yet). All functions assume the input string is in valid format of JSON. Also number format checking is poor.
+Improvements are welcome. Read the source code; it is just around 350 LOC, give or take  :smile:
 
 License: [MIT](https://opensource.org/licenses/MIT)
 ======
