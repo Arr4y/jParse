@@ -1,5 +1,5 @@
 <br>
-<h3 align="center">Very simple JSON parser for c++</h3>
+<h3 align="center">A very simple JSON parser for c++</h3>
 <h4 align="center">Currently in the works. This is based off of the jute code. This project is looking to add new features, increase performance, and reduce overhead and resource usage.<h4>
 <br>
 <br>
